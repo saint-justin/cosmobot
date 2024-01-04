@@ -15,13 +15,13 @@ Any errors should be captured and printed to your terminal.
 
 #### To Do:
 
-- [ ] Near-enough searching
-- [ ] Card lookup
-    - [ ] Basic:
-        - [ ] Card text
+- [x] Near-enough searching
+- [x] Card lookup
+    - [x] Basic:
+        - [x] Card text
         - [ ] Card art
         - [ ] Hide spoilers
-        - [ ] Near-enough options
+        - [x] Near-enough options
     - [ ] Variants:
         - [ ] Display all variant images + names
         - [ ] Hide spoilers

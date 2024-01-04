@@ -30,6 +30,10 @@
 //!     - Searches by artist (inker)
 //!     - Searches by artist (colorist)
 //!     - Sorting by attribute (cost/power/name/etc.)
+//! 
+//! # Important Note
+//! Poise currently consumes docstrings for commands so you'll need to check
+//! the repo pages individually for command-specific source documentation.
 
 use poise::serenity_prelude::{GatewayIntents, User};
 
