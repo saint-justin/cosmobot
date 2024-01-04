@@ -1,61 +1,51 @@
-use cards::make_card_map;
-use cards::parse_cards;
-use serenity::async_trait;
-use serenity::prelude::*;
+//! # Cosmo: A Marvel Snap Card Discord Bot
+//! 
+//! Cosmo is a Discord bot that allows users to look up information
+//! about Marvel Snap cards and locations. Cosmo is still early in 
+//! development. 
+//! 
+//! See the feature list below for what is and isn't currently implemented:
+//! 
+//! ### Public Features:
+//! - None yet (but many coming soon!)
+//! 
+//! ### Beta Features:
+//! - Individual card searches
+//!     - Exact name searches
+//! 
+//! ### Planned Features:
+//! - Spoiler filtering
+//!     - Spoilers-included card searches
+//!     - Spoilers-included location searches
+//! - Individual card searches
+//!     - Fuzzy-name search recommendations
+//! - Location searches
+//!     - Exact-name searches
+//!     - Fuzzy-name search recommendations
+//! - Multi-card searches
+//!     - Searches by name
+//!     - Searches by keyword
+//!     - Searches by power
+//!     - Searches by cost
+//!     - Searches by artist (inker)
+//!     - Searches by artist (colorist)
+//!     - Sorting by attribute (cost/power/name/etc.)
+
 use poise::serenity_prelude::{GatewayIntents, User};
-use serenity::utils::MessageBuilder;
 
 mod aws_helpers;
 mod cards;
+mod search_for;
+mod prelude {
+    pub use crate::cards::*;
+    pub use crate::search_for::search_for;
 
-// #[group]
-// #[commands(ping)]
-// struct General;
-
-struct Handler;
-
-#[async_trait]
-impl EventHandler for Handler {}
-
-struct Data {} // User data, which is stored and accessible in all command invocations
-type Error = Box<dyn std::error::Error + Send + Sync>;
-type Context<'a> = poise::Context<'a, Data, Error>;
-
-#[poise::command(slash_command, prefix_command)]
-async fn age(
-    ctx: Context<'_>,
-    #[description = "Selected user"] user: Option<User>,
-) -> Result<(), Error> {
-    let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    let response = format!("{}'s account was created at {}", u.name, u.created_at());
-    ctx.say(response).await?;
-    Ok(())
+    pub struct Data {}
+    pub type Error = Box<dyn std::error::Error + Send + Sync>;
+    pub type Context<'a> = poise::Context<'a, Data, Error>;
 }
 
-#[poise::command(slash_command, prefix_command)]
-async fn search_for(
-    ctx: Context<'_>,
-    card: String,
-) -> Result<(), Error> {
-    let card_map = make_card_map(parse_cards()?);
-    match card_map.get(&card) {
-        Some(found_card) => {
-            let response = MessageBuilder::new()
-                .push("Card found!\n")
-                .push(format!("Name:   {}\n", found_card.name))
-                .push(format!("Power:  {}\n", found_card.power))
-                .push(format!("Energy: {}", found_card.cost))
-                .build();
-            ctx.say(response).await?;
-            Ok(())
-        }
-        None => {
-            let response = format!("No cards found with name `{}`", card);
-            ctx.say(response).await?;
-            Ok(())
-        }
-    }
-}
+use prelude::*;
 
 #[tokio::main]
 async fn main() {
@@ -64,9 +54,12 @@ async fn main() {
         .await
         .expect("Error getting bot API token");
 
-        let framework = poise::Framework::builder()
+    let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![age(), search_for()],
+            commands: vec![
+                age(), 
+                search_for()
+            ],
             ..Default::default()
         })
         .token(token)
@@ -78,23 +71,18 @@ async fn main() {
             })
         });
 
+    println!("Poise framework defined, starting bot");
     framework.run().await.unwrap();
-    
-    /*
-    // Build serenity client with framework + gateway intents
-    let framework = StandardFramework::new().group(&GENERAL_GROUP);
-    let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
-    let mut client = Client::builder(token, intents)
-        .event_handler(Handler)
-        .framework(framework)
-        .await
-        .expect("Error creating client");
+}
 
-    let parse_str = cards::parse_cards()?;
-
-    // start listening for events by starting a single shard
-    if let Err(why) = client.start().await {
-        println!("An error occurred while running the client: {:?}", why);
-    }
-    */
+/// Placeholder test command to make sure Poise is working as intended
+#[poise::command(slash_command, prefix_command)]
+async fn age(
+    ctx: Context<'_>,
+    #[description = "Selected user"] user: Option<User>,
+) -> Result<(), Error> {
+    let u = user.as_ref().unwrap_or_else(|| ctx.author());
+    let response = format!("{}'s account was created at {}", u.name, u.created_at());
+    ctx.say(response).await?;
+    Ok(())
 }

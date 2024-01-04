@@ -1,17 +1,17 @@
+//! A set of Snap card data management helper functions.
+
 #![allow(dead_code)]
-use std::collections::HashMap;
-use std::fs;
-use std::env::current_dir;
 use self::card_types::Card;
 use self::card_types::Cards;
+use std::collections::HashMap;
+use std::fs;
 
-mod card_types;
+pub mod card_types;
 
 /// Parses card JSON blob into Cards type
 pub fn parse_cards() -> serde_json::Result<Cards> {
-    println!("Current Dir: {:?}", current_dir().unwrap());
-    let raw_json = fs::read_to_string("./snap-data/cards.json")
-        .expect("Should have been able to read path");
+    let raw_json =
+        fs::read_to_string("./snap-data/cards.json").expect("Should have been able to read path");
     let cards = serde_json::from_str::<Cards>(&raw_json)?;
     Ok(cards)
 }
@@ -20,7 +20,7 @@ pub fn parse_cards() -> serde_json::Result<Cards> {
 pub fn make_card_map(input: Cards) -> HashMap<String, Card> {
     let mut map = HashMap::new();
     for card in input.cards {
-        map.insert(card.name.clone(), card.clone());
+        map.insert(card.name.clone().to_ascii_lowercase(), card.clone());
     }
     map
 }
