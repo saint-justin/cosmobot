@@ -1,1 +1,6 @@
 /target
+/data-scraping/node_modules
+/snap-data/cards
+/snap-data/locations
+/snap-data/variants
+/snap-data/cards.json
