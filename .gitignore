@@ -1,5 +1,6 @@
 /target
 /data-scraping/node_modules
+/data-scrapiing/*.js
 /snap-data/cards
 /snap-data/locations
 /snap-data/variants

@@ -1,6 +1,11 @@
 ### Snaps, the Marvel Snap Discord Bot!
 
-Snaps is a discord bot for marvel snap. To use it, you'll first need to scrape some data. To do that, run the Python script at `./data-scraping/scrapr.py`. That will pull all the data required to run the app and format it into a series of images and JSON blobs that will be read by the bot.
+Snaps is a discord bot for marvel snap. Before running the bot, you'll need to pull in some data for the bot to handle. To do that:
+
+1. Navigate into the `/data-scraping` folder in your terminal
+2. With [NodeJS installed](https://nodejs.org), run `npm install` to install required dependencies
+3. Run `npm install ts-node --global` to globally install [TS Node](https://www.npmjs.com/package/ts-node)
+4. Run `ts-node main.ts` to generate your `snap-data/cards.json` file for local use 
 
 The script is made by [vlmaier](https://github.com/vlmaier) on GitHub, [script repo here](https://github.com/vlmaier/marvel-snap-scrapr/).
 
