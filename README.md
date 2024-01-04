@@ -15,24 +15,24 @@ Any errors should be captured and printed to your terminal.
 
 #### To Do:
 
-- Near-enough searching
-- Card lookup
-    - Basic:
-        - Card text
-        - Card art
-        - Hide spoilers
-        - Near-enough options
-    - Variants:
-        - Display all variant images + names
-        - Hide spoilers
-    - Spoilers: 
-        - Card text
-        - Card art
-        - Include variants
+- [ ] Near-enough searching
+- [ ] Card lookup
+    - [ ] Basic:
+        - [ ] Card text
+        - [ ] Card art
+        - [ ] Hide spoilers
+        - [ ] Near-enough options
+    - [ ] Variants:
+        - [ ] Display all variant images + names
+        - [ ] Hide spoilers
+    - [ ] Spoilers: 
+        - [ ] Card text
+        - [ ] Card art
+        - [ ] Include variants
 
-- Artist lookup
-    - Look up card art by artist name
-    - Option to include spoilers
+- [ ] Artist lookup
+    - [ ] Look up card art by artist name
+    - [ ] Option to include spoilers
     
-- Discord updates copypasta
-    - Observer pattern slash command to link channel
+- [ ] Discord updates copypasta
+    - [ ] Observer pattern slash command to link channel
