@@ -7,7 +7,7 @@ Snaps is a discord bot for marvel snap. Before running the bot, you'll need to p
 3. Run `npm install ts-node --global` to globally install [TS Node](https://www.npmjs.com/package/ts-node)
 4. Run `ts-node main.ts` to generate your `snap-data/cards.json` file for local use 
 
-The script is made by [vlmaier](https://github.com/vlmaier) on GitHub, [script repo here](https://github.com/vlmaier/marvel-snap-scrapr/).
+There's also a Python script for pulling assets (cards/variants/locations) but it's not needed yet. The Python script is made by [vlmaier](https://github.com/vlmaier) on GitHub, [script repo here](https://github.com/vlmaier/marvel-snap-scrapr/).
 
 Starting the bot is simple once you'ved scraped the required data. Simply run `cargo run` in this directory and the bot will spin up on its own.
 
@@ -19,7 +19,9 @@ Any errors should be captured and printed to your terminal.
 - [x] Card lookup
     - [x] Basic:
         - [x] Card text
-        - [ ] Card art
+        - [x] Card art
+        - [x] Card cost
+        - [x] Cart power
         - [ ] Hide spoilers
         - [x] Near-enough options
     - [ ] Variants:

@@ -1,18 +1,18 @@
 //! # Cosmo: A Marvel Snap Card Discord Bot
-//! 
+//!
 //! Cosmo is a Discord bot that allows users to look up information
-//! about Marvel Snap cards and locations. Cosmo is still early in 
-//! development. 
-//! 
+//! about Marvel Snap cards and locations. Cosmo is still early in
+//! development.
+//!
 //! See the feature list below for what is and isn't currently implemented:
-//! 
+//!
 //! ### Public Features:
 //! - None yet (but many coming soon!)
-//! 
+//!
 //! ### Beta Features:
 //! - Individual card searches
 //!     - Exact name searches
-//! 
+//!
 //! ### Planned Features:
 //! - Spoiler filtering
 //!     - Spoilers-included card searches
@@ -30,19 +30,24 @@
 //!     - Searches by artist (inker)
 //!     - Searches by artist (colorist)
 //!     - Sorting by attribute (cost/power/name/etc.)
-//! 
+//!
 //! # Important Note
 //! Poise currently consumes docstrings for commands so you'll need to check
 //! the repo pages individually for command-specific source documentation.
+
+use std::env;
 
 use poise::serenity_prelude::{GatewayIntents, User};
 
 mod aws_helpers;
 mod cards;
-mod search_for;
+mod commands;
+mod helpers;
+
 mod prelude {
     pub use crate::cards::*;
-    pub use crate::search_for::search_for;
+    pub use crate::commands::search::search_for;
+    pub use crate::helpers::replace_span_tags;
 
     pub struct Data {}
     pub type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -54,16 +59,11 @@ use prelude::*;
 #[tokio::main]
 async fn main() {
     // Bot token from Secrets Manager
-    let token = aws_helpers::get_bot_token()
-        .await
-        .expect("Error getting bot API token");
+    let token = env::var("BOT_TOKEN").expect("BOT_TOKEN not set");
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![
-                age(), 
-                search_for()
-            ],
+            commands: vec![age(), search_for()],
             ..Default::default()
         })
         .token(token)

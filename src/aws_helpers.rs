@@ -1,4 +1,5 @@
 //! A set of AWS helper functions.
+#![allow(unused)]
 
 use aws_config::meta::region::RegionProviderChain;
 use aws_config::BehaviorVersion;
@@ -20,7 +21,7 @@ pub async fn get_bot_token() -> Result<String, Error> {
         .secret_id(SECRET_ID)
         .send()
         .await?;
-    
+
     println!("Bot secret token successfully retreived");
     Ok(res.secret_string().unwrap().to_owned())
 }
