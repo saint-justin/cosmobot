@@ -1,5 +1,5 @@
 [package]
-name = "cosmo-bot"
+name = "cosmobot"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,6 +9,7 @@ edition = "2021"
 aws-config = "1.1.1"
 aws-sdk-dynamodb = "1.9.0"
 aws-sdk-secretsmanager = "1.11.0"
+dotenv = "0.15.0"
 fuzzy-matcher = "*"
 itertools = "0.12.0"
 lazy_static = "1.4.0"

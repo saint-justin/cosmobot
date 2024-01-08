@@ -5,3 +5,5 @@
 /snap-data/locations
 /snap-data/variants
 /snap-data/cards.json
+Secrets.toml
+.env

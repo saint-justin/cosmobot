@@ -22,7 +22,8 @@ Any errors should be captured and printed to your terminal.
         - [x] Card art
         - [x] Card cost
         - [x] Cart power
-        - [ ] Hide spoilers
+        - [x] Hide spoilers
+        - [ ] Allow spoilers
         - [x] Near-enough options
     - [ ] Variants:
         - [ ] Display all variant images + names

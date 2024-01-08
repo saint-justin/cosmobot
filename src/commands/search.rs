@@ -5,7 +5,7 @@
 //! - `search_for()`
 //!     - Default search mechanism to find a single card (non-case-sensitive)
 
-use crate::prelude::replace_span_tags;
+use crate::prelude::replace_tags;
 use crate::prelude::{card_types::Card, make_card_map, parse_cards, Context, Error};
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use itertools::Itertools;
@@ -21,23 +21,37 @@ use std::{cmp::Ordering, collections::HashMap};
 /// * `ctx` - Context object passed from poise bot in [`main()`]
 /// * `card_name` - A string of the card name being searched
 #[poise::command(slash_command, prefix_command)]
-pub async fn search_for(ctx: Context<'_>, card_name: String) -> Result<(), Error> {
-    let card_map = make_card_map(parse_cards()?);
-    match card_map.get(&card_name.to_lowercase()) {
+pub async fn fetch(ctx: Context<'_>, card_name: String) -> Result<(), Error> {
+    let card_map = make_card_map(parse_cards()?, false);
+    match card_map.get(&card_name.to_ascii_lowercase()) {
         Some(found_card) => {
             reply_with_card(ctx, found_card).await?;
             Ok(())
         }
-        None => match try_fuzzy_search(card_name.clone(), &card_map) {
+        None => match try_fuzzy_search(card_name.to_ascii_lowercase().clone(), &card_map) {
             Some(fuzzy_matches) => {
-                let msg = fuzzy_matches.iter().fold(
-                    "Potential matches found:".to_owned(),
-                    |acc, fuzzy_name| {
-                        format!("{}\n{}", acc, card_map.get(fuzzy_name).unwrap().name)
-                    },
-                );
-                ctx.say(msg).await?;
-                Ok(())
+                if fuzzy_matches.len() > 10 {
+                    let mut msg = fuzzy_matches[0..10].iter().fold(
+                        format!("No exact matches for `{}`, did you mean one of these?", card_name.to_ascii_lowercase()),
+                        |acc, fuzzy_name| {
+                            format!("{}\n`{}`", acc, card_map.get(fuzzy_name).unwrap().name)
+                        },
+                    );
+                    msg += &format!("\nor {} others.", fuzzy_matches.len() - 10);
+                    ctx.reply(msg).await?;
+                    Ok(())
+                } else {
+                    let msg = fuzzy_matches.iter().fold(
+                        format!("No exact matches for `{}`, did you mean one of these?", card_name),
+                        |acc, fuzzy_name| {
+                            format!("{}\n`{}`", acc, card_map.get(fuzzy_name).unwrap().name)
+                        },
+                    );
+                    ctx.reply(msg).await?;
+                    Ok(())
+                }
+
+                
             }
 
             None => {
@@ -99,7 +113,7 @@ async fn reply_with_card(ctx: Context<'_>, card: &Card) -> Result<(), Error> {
 
 fn get_ability(card: &Card) -> String {
     if card.ability.len() != 0 {
-        replace_span_tags(&card.ability)
+        replace_tags(&card.ability)
     } else {
         format!("*{}*", card.flavor)
     }

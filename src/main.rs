@@ -36,18 +36,17 @@
 //! the repo pages individually for command-specific source documentation.
 
 use std::env;
-
+use dotenv::dotenv;
 use poise::serenity_prelude::{GatewayIntents, User};
 
-mod aws_helpers;
 mod cards;
 mod commands;
 mod helpers;
 
 mod prelude {
     pub use crate::cards::*;
-    pub use crate::commands::search::search_for;
-    pub use crate::helpers::replace_span_tags;
+    pub use crate::commands::search::fetch;
+    pub use crate::helpers::replace_tags;
 
     pub struct Data {}
     pub type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -58,12 +57,12 @@ use prelude::*;
 
 #[tokio::main]
 async fn main() {
-    // Bot token from Secrets Manager
-    let token = env::var("BOT_TOKEN").expect("BOT_TOKEN not set");
+    dotenv().ok();
+    let token = env::var("DISCORD_TOKEN").expect("Bot token not present");
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![age(), search_for()],
+            commands: vec![age(), fetch()],
             ..Default::default()
         })
         .token(token)

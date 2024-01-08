@@ -17,10 +17,14 @@ pub fn parse_cards() -> serde_json::Result<Cards> {
 }
 
 /// Creates a hashmap from an input of Cards type
-pub fn make_card_map(input: Cards) -> HashMap<String, Card> {
+pub fn make_card_map(input: Cards, include_spoilers: bool) -> HashMap<String, Card> {
     let mut map = HashMap::new();
     for card in input.cards {
-        map.insert(card.name.clone().to_ascii_lowercase(), card.clone());
+        let card_released = card.source.to_ascii_lowercase() != "none";
+        if card_released || (!card_released && include_spoilers) {
+            map.insert(card.name.clone().to_ascii_lowercase(), card.clone());
+        }
     }
+
     map
 }
