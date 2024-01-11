@@ -1,6 +1,18 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CardDataResponse {
+    pub GET: SearchData,
+    pub success: Cards,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SearchData {
+    searchtype: String,
+    searchcardstype: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Cards {
     pub cards: Vec<Card>,
 }

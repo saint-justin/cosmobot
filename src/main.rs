@@ -35,9 +35,8 @@
 //! Poise currently consumes docstrings for commands so you'll need to check
 //! the repo pages individually for command-specific source documentation.
 
-use std::env;
-use dotenv::dotenv;
-use poise::serenity_prelude::{GatewayIntents, User};
+use poise::serenity_prelude::{GatewayIntents};
+use shuttle_runtime::__internals::Context;
 
 mod cards;
 mod commands;
@@ -45,8 +44,8 @@ mod helpers;
 
 mod prelude {
     pub use crate::cards::*;
-    pub use crate::commands::search::fetch;
-    pub use crate::helpers::replace_tags;
+    pub use crate::commands::fetch::fetch;
+    pub use crate::helpers::{replace_tags, update_json};
 
     pub struct Data {}
     pub type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -55,17 +54,20 @@ mod prelude {
 
 use prelude::*;
 
-#[tokio::main]
-async fn main() {
-    dotenv().ok();
-    let token = env::var("DISCORD_TOKEN").expect("Bot token not present");
-
+#[shuttle_runtime::main]
+pub async fn axum (
+    #[shuttle_secrets::Secrets] secret_store: shuttle_secrets::SecretStore,
+) -> shuttle_axum::ShuttleAxum {
+    let discord_token = secret_store
+        .get("DISCORD_TOKEN")
+        .context("'DISCORD_TOKEN' was not found")?;
+    
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![age(), fetch()],
+            commands: vec![fetch()],
             ..Default::default()
         })
-        .token(token)
+        .token(discord_token)
         .intents(GatewayIntents::non_privileged())
         .setup(|ctx, _ready, framework| {
             Box::pin(async move {
@@ -76,16 +78,6 @@ async fn main() {
 
     println!("Poise framework defined, starting bot");
     framework.run().await.unwrap();
-}
 
-/// Placeholder test command to make sure Poise is working as intended
-#[poise::command(slash_command, prefix_command)]
-async fn age(
-    ctx: Context<'_>,
-    #[description = "Selected user"] user: Option<User>,
-) -> Result<(), Error> {
-    let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    let response = format!("{}'s account was created at {}", u.name, u.created_at());
-    ctx.say(response).await?;
-    Ok(())
+    todo!();
 }

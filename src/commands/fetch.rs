@@ -22,10 +22,23 @@ use std::{cmp::Ordering, collections::HashMap};
 /// * `card_name` - A string of the card name being searched
 #[poise::command(slash_command, prefix_command)]
 pub async fn fetch(ctx: Context<'_>, card_name: String) -> Result<(), Error> {
-    let card_map = make_card_map(parse_cards()?, false);
+    let card_map = make_card_map(parse_cards().await?, false);
     match card_map.get(&card_name.to_ascii_lowercase()) {
         Some(found_card) => {
-            reply_with_card(ctx, found_card).await?;
+            ctx.send(|reply| {
+                reply
+                    .embed(|embed| {
+                        embed
+                            .title(found_card.name.clone())
+                            .image(found_card.art.clone())
+                            .field("Cost", found_card.cost, true)
+                            .field("Power", found_card.power, true)
+                            .field("Ability", get_ability(found_card), false)
+                            .url(found_card.url.clone())
+                    })
+                    .ephemeral(false)
+            })
+            .await?;
             Ok(())
         }
         None => match try_fuzzy_search(card_name.to_ascii_lowercase().clone(), &card_map) {
@@ -38,6 +51,7 @@ pub async fn fetch(ctx: Context<'_>, card_name: String) -> Result<(), Error> {
                         },
                     );
                     msg += &format!("\nor {} others.", fuzzy_matches.len() - 10);
+                    println!(">10 reply");
                     ctx.reply(msg).await?;
                     Ok(())
                 } else {
@@ -47,11 +61,10 @@ pub async fn fetch(ctx: Context<'_>, card_name: String) -> Result<(), Error> {
                             format!("{}\n`{}`", acc, card_map.get(fuzzy_name).unwrap().name)
                         },
                     );
+                    println!("<10 reply");
                     ctx.reply(msg).await?;
                     Ok(())
                 }
-
-                
             }
 
             None => {
@@ -77,7 +90,7 @@ fn try_fuzzy_search(card_name: String, card_map: &HashMap<String, Card>) -> Opti
         })
         .collect_vec();
 
-    if matching_cards.len() == 0 {
+    if matching_cards.is_empty() {
         return None;
     }
 
@@ -89,30 +102,11 @@ fn try_fuzzy_search(card_name: String, card_map: &HashMap<String, Card>) -> Opti
             Ordering::Less
         }
     });
-    Some(matching_cards.iter().map(|m| m.1.to_owned()).collect_vec())
-}
-
-async fn reply_with_card(ctx: Context<'_>, card: &Card) -> Result<(), Error> {
-    ctx.send(|reply| {
-        reply
-            .embed(|embed| {
-                embed
-                    .title(card.name.clone())
-                    .image(card.art.clone())
-                    .field("Cost", card.cost, true)
-                    .field("Power", card.power, true)
-                    .field("Ability", get_ability(card), false)
-                    .url(card.url.clone())
-            })
-            .ephemeral(false)
-    })
-    .await?;
-
-    Ok(())
+    Some(matching_cards.iter().map(|m| m.1.clone()).collect_vec())
 }
 
 fn get_ability(card: &Card) -> String {
-    if card.ability.len() != 0 {
+    if card.ability.is_empty() {
         replace_tags(&card.ability)
     } else {
         format!("*{}*", card.flavor)

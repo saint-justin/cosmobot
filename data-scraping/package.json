@@ -3,6 +3,9 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
+  "scripts": {
+    "start": "ts-node main.ts"
+  },
   "dependencies": {
     "node-fetch": "^3.3.2"
   }
