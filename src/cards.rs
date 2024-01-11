@@ -1,7 +1,8 @@
 //! A set of Snap card data management helper functions.
 
 #![allow(dead_code)]
-use crate::prelude::update_json;
+use crate::helpers::write_updated_json;
+use crate::prelude::fetch_updated_json;
 
 use self::card_types::Card;
 use self::card_types::Cards;
@@ -16,7 +17,12 @@ const CARDS_PATH: &str = "./snap-data/cards.json";
 /// Parses card JSON blob into Cards type
 pub async fn parse_cards() -> serde_json::Result<Cards> {
     if !Path::new(CARDS_PATH).exists() {
-        let _ = update_json().await;
+        match fetch_updated_json().await {
+            Ok(raw_json) => {
+                let _ = write_updated_json(&raw_json);
+            }
+            Err(e) => println!("Err while trying to update json {:?}", e.to_string()),
+        };
     }
 
     let raw_json =

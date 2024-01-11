@@ -1,6 +1,7 @@
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::fs;
+use std::fs; 
+use reqwest;
 
 use crate::prelude::card_types::CardDataResponse;
 
@@ -14,12 +15,14 @@ pub fn replace_tags(s: &str) -> String {
     SPAN_TAG_RE.replace_all(s, "**").to_string()
 }
 
-pub async fn update_json() -> Result<(), Reqwest::Error> {
-    let raw_json = reqwest::get(CARD_DATA_URI)
+pub async fn fetch_updated_json() -> Result<String, reqwest::Error> {
+    Ok(reqwest::get(CARD_DATA_URI)
         .await?
         .text()
-        .await?;
+        .await?)
+}
 
+pub fn write_updated_json(raw_json: &str) -> Result<(), serde_json::Error> {
     let response = serde_json::from_str::<CardDataResponse>(&raw_json)?;
     let cards_str = serde_json::to_string(&response.success).unwrap();
 
@@ -33,7 +36,7 @@ pub async fn update_json() -> Result<(), Reqwest::Error> {
 mod helper_tests {
     use crate::prelude::replace_tags;
 
-    use super::update_json;
+    use super::fetch_updated_json;
 
     #[test]
     fn replace_tags_works() {
@@ -46,6 +49,6 @@ mod helper_tests {
 
     #[test]
     fn manually_update_json() {
-        let _ = update_json();
+        let _ = fetch_updated_json();
     }
 }

@@ -45,7 +45,7 @@ mod helpers;
 mod prelude {
     pub use crate::cards::*;
     pub use crate::commands::fetch::fetch;
-    pub use crate::helpers::{replace_tags, update_json};
+    pub use crate::helpers::{replace_tags, fetch_updated_json};
 
     pub struct Data {}
     pub type Error = Box<dyn std::error::Error + Send + Sync>;
